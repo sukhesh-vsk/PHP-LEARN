@@ -1,0 +1,12 @@
+dashboard/
+img/
+webalizer/
+studentapi/
+
+favicon.ico
+bitnami.css
+applications.html
+index.php
+
+
+!api/
