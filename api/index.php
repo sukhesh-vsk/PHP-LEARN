@@ -38,8 +38,11 @@
             $func = strtolower(trim(str_replace("/","",$_REQUEST['rquest'])));
             if((int)method_exists($this,$func) > 0)
                 $this->$func();
-            else
-                $this->response('',400);                // If the method not exist with in this class, response would be "Page not found".
+            else {
+                $message = array("status" => "Not Found", "msg" => "The method you are requesting is not found :(");
+                $message = $this->json($message);
+                $this->response($message,404);   // If the method not exist with in this class, response would be "Page not found".
+            }
         }
 
         /*************API SPACE START*******************/
@@ -84,8 +87,8 @@
         }
 
         private function test(){
-                $data = $this->json(getallheaders());
-                $this->response($data,200);
+            $data = $this->json(getallheaders());
+            $this->response($data,200);
         }
 
         function generate_hash(){
@@ -111,7 +114,7 @@
 
     }
 
-    // Initiiate Library
+    // Initiate Library
 
     $api = new API;
     $api->processApi();

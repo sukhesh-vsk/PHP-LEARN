@@ -2,10 +2,7 @@
 
 class Database
 {
-    static $DB_SERVER = "";
-    static $DB_USER = "";
-    static $DB_PASSWORD = "";
-    static $DB_NAME = "";
+    static $DB_SERVER, $DB_USER, $DB_PASSWORD, $DB_NAME;
 
     static $db;
 
