@@ -29,6 +29,22 @@
             }
         }
 
+        public function test_hash() {
+            if(isset($this->_request['pass'])) {
+                $salt = "hello";
+                $pwd_u = "password";
+                // $hash = crypt($this->_request['pass'], $salt);
+                $hash = password_hash($pwd_u, '2y', array('cost' => 10));
+                
+
+                $data = array("password" => $this->_request['pass'], "hashed pwd" => $hash, "verification" => password_verify($this->_request['pass'], $hash));
+                $data = $this->json($data);
+
+                $this->response($data, 200);
+            }
+        }
+
+
         /*
          * Public method for access api.
          * This method dynmically call the method based on the query string
