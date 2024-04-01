@@ -16,12 +16,65 @@
             $this->db = Database::getConnection();  // Initialize db connection
         }
 
+        /*
+            Application API start
+        */
+
+
+        public function signup() {
+            if(isset($this->_request['username']) && isset($this->_request['password']) && isset($this->_request['email'])) {
+                
+                try {
+                    $s = new Signup($this->_request['username'], $this->_request['password'], $this->_request['email']);
+                    $id = $s->getInsertID();
+                    $data = [
+                        "id" => $id,
+                        "message" =>  "User Successfully Created"
+                    ];
+                    $data = $this->json($data);
+                    
+                    $this->response($data, 201);
+                } catch(Exception $e) {
+                    $data = [
+                        "error" => "Signup Failed",
+                        "message" => $e->getMessage()
+                    ];
+                    
+                    $this->response(
+                        $this->json($data),
+                        409
+                    );
+
+                }
+
+            } else {
+                
+                $data = [
+                    "message" => "Bad Request"
+                ];
+                $data = $this->json($data);
+
+                $this->response($data, 400);
+            }
+        }
+
+
+        /*
+            Application API end
+        */
+
+        // generating hash and verifying -- testing api
         public function gen_hash() {
             if(isset($this->_request['pass'])) {
+                $user = new SignUp("", "admin", "");
+                $usr_p = $user->hashPassword();
 
                 $s = new SignUp("", $this->_request['pass'], "");
+
                 $data = [
-                    "hash" => $s->hashPassword(),
+                    "real hash" => $usr_p,
+                    "input hash" => $s->hashPassword(),
+                    "verify" => password_verify($this->_request['pass'], $usr_p)
                 ];
 
                 $data = $this->json($data);
@@ -29,6 +82,7 @@
             }
         }
 
+        // experimenting password hash -- testing api
         public function test_hash() {
             if(isset($this->_request['pass'])) {
                 $salt = "hello";
@@ -106,13 +160,6 @@
             $data = $this->json(getallheaders());
             $this->response($data,200);
         }
-
-        function generate_hash(){
-            $bytes = random_bytes(16);
-            return bin2hex($bytes);
-        }
-
-
 
 
         /*************API SPACE END*********************/
