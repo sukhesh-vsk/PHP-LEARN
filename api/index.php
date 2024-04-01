@@ -20,9 +20,22 @@
             Application API start
         */
 
-
+        /*
+         *  Signup api  
+         *  default url : https://localhost/api/signup
+         * 
+         *  POST request parameters:
+         *  @username, @password, @email
+         * 
+         *  If all parameters were set :
+         *     => Creates instance for Signup class. On Successful insert returns successful response.
+         *     => Incase of MySql error. Returns response with error message.
+         * 
+         *  Else :
+         *     => Returns response for Bad Request.
+         */
         public function signup() {
-            if(isset($this->_request['username']) && isset($this->_request['password']) && isset($this->_request['email'])) {
+            if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($this->_request['username']) && isset($this->_request['password']) && isset($this->_request['email'])) {
                 
                 try {
                     $s = new Signup($this->_request['username'], $this->_request['password'], $this->_request['email']);
