@@ -3,11 +3,14 @@ img/
 webalizer/
 studentapi/
 
+!api/
+!api/*
+
 favicon.ico
 bitnami.css
 applications.html
 index.php
+api/env.json
+api/comp*
+api/vendor/
 
-
-!api/
-!api/*

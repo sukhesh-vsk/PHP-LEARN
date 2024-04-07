@@ -76,7 +76,9 @@
             Application API end
         */
 
-        // generating hash and verifying -- testing api
+        // Generating hash and verifying -- testing 
+
+        // This will cause error, as for duplicate entry. Comment out insert query in Signup class.
         public function gen_hash() {
             if(isset($this->_request['pass'])) {
                 $user = new SignUp("", "admin", "");

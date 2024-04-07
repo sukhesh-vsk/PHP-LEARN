@@ -1,13 +1,13 @@
 <?php
 
 require_once('Database.class.php');
+require_once(__DIR__ . '/../vendor/autoload.php');
 
 class SignUp {
     private $username, $password, $email, $token;
     
     private $db;
 
-    
     /*
     *  Signup Constructor
     *
@@ -28,8 +28,12 @@ class SignUp {
         $this->email = $email;
         $this->token = $this->genToken();
 
-        $query = "INSERT INTO `apis`.`auth` (username, password, email, active, token)  values('$this->username', '$this->password', '$this->email', 0, '$this->token')";
-        
+        if($this->sendVerifyEmail()) {
+            $query = "INSERT INTO `apis`.`auth` (username, password, email, active, token)  values('$this->username', '$this->password', '$this->email', 0, '$this->token')";
+        } else {
+            throw new Exception("Unable to complete verification..");
+        }
+            
         if( !mysqli_query($this->db, $query) ) {
             throw new Exception("Unable to Signup..");
         } 
@@ -66,6 +70,52 @@ class SignUp {
     }
 
     /*
+     *  sendVerifyEmail() -> boolean
+     * 
+     *  @noparams
+     * 
+     *  Sends a verification email to the user.
+     *  Uses Brevo API to send the email.
+     *  Returns false if unable to send email. 
+     *  
+     *  (currently for testing purpose this returns false always, 
+     *    so that the user is not created in the database.)
+     */
+    public function sendVerifyEmail() {
+        $config_json = file_get_contents("env.json");
+        $env = json_decode($config_json, true);
+
+        // Configure API key authorization: api-key
+        $config = Brevo\Client\Configuration::getDefaultConfiguration()->setApiKey('api-key', $env['api_key']);
+        // Configure API key authorization: partner-key
+        $config = Brevo\Client\Configuration::getDefaultConfiguration()->setApiKey('partner-key', $env['api_key']);
+
+        $apiInstance = new Brevo\Client\Api\TransactionalEmailsApi(
+            new GuzzleHttp\Client(),
+            $config
+        );
+        // \Brevo\Client\Model\SendSmtpEmail | Values to send a transactional email
+        $sendSmtpEmail = new \Brevo\Client\Model\SendSmtpEmail([
+            'subject' => 'Test Email',
+            'sender' => ['name' => 'Batman', 'email' => 'noreply@saakletu.com'],
+            'replyTo' => ['name' => 'Batman', 'email' => 'noreply@saakletu.com'],
+            'to' => [[ 'name' => $this->username, 'email' => $this->email]],
+            'htmlContent' => '<html><body><h1>This is a transactional email {{params.bodyMessage}}</h1></body></html>',
+            'params' => ['bodyMessage' => 'made just for you!']
+        ]); 
+
+        try {
+            $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
+            print_r($result);
+        } catch (Exception $e) {
+            echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
+        }
+
+        return false;
+
+    }
+
+    /*
      *  getInsertID() -> user id (int) 
      * 
      *  @noparams
@@ -75,4 +125,5 @@ class SignUp {
     public function getInsertID() {
         return mysqli_insert_id($this->db);
     }
+
 }
