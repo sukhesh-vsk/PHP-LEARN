@@ -7,10 +7,9 @@ class Database
     static $db;
 
     public static function getConnection() {
-        
-        $config_json = file_get_contents("env.json");
+        $config_json = file_get_contents(__DIR__ . "/../../../env.json");
         $dbconfig = json_decode($config_json, true);
-
+        
         Database::$DB_SERVER = $dbconfig["server"];
         Database::$DB_USER = $dbconfig["user"];
         Database::$DB_PASSWORD = $dbconfig["password"];

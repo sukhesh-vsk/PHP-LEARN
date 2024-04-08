@@ -97,6 +97,10 @@
             }
         }
 
+        public function verifyDB() {
+            echo "hello";
+        }
+
         // experimenting password hash -- testing api
         public function test_hash() {
             if(isset($this->_request['pass'])) {
