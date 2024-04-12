@@ -101,6 +101,32 @@ class SignUp
             new GuzzleHttp\Client(),
             $config
         );
+<<<<<<< HEAD
+
+        $htmlContent = file_get_contents(__DIR__ . "/../templates/template.html");
+        $htmlContent = preg_replace("{{{token}}}", $this->token, $htmlContent);
+        $htmlContent = preg_replace("{{{usermail}}}", $this->email, $htmlContent);
+        $htmlContent = preg_replace("{{{username}}}", $this->username, $htmlContent);
+
+=======
+<<<<<<< HEAD
+>>>>>>> 087d8f3 (Updated file)
+        // \Brevo\Client\Model\SendSmtpEmail | Values to send a transactional email
+        $sendSmtpEmail = new \Brevo\Client\Model\SendSmtpEmail([
+            'subject' => 'Test Email',
+            'sender' => ['name' => 'ClassPro','email' => 'noreply@saakletu.com'],
+            'replyTo' => ['name' => 'Admin', 'email' => 'sukhesh.vsk2005@gmail.com'],
+            'to' => [['name' => $this->username, 'email' => $this->email]],
+            'htmlContent' => $htmlContent,
+        ]);
+
+        try {
+            $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
+<<<<<<< HEAD
+            return true;
+=======
+            print_r($result);
+=======
 
         $htmlContent = file_get_contents(__DIR__ . "/../templates/template.html");
         $htmlContent = preg_replace("{{{token}}}", $this->token, $htmlContent);
@@ -119,6 +145,8 @@ class SignUp
         try {
             $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
             return true;
+>>>>>>> 10c88c9 (Added email authentication api)
+>>>>>>> 087d8f3 (Updated file)
         } catch (Exception $e) {
             echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
         }
