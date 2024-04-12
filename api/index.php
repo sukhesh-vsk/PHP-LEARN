@@ -71,6 +71,31 @@
             }
         }
 
+        public function verify() {
+            if($_SERVER['REQUEST_METHOD'] == "POST" && isset($this->_request['tkn'])) {
+                $conn = Database::getConnection();
+                $tkn = $this->_request['tkn'];
+
+                $sql = "SELECT * FROM auth WHERE token=`$tkn`";
+                $result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+
+                if($result) {
+                    $query = "UPDATE auth set active=1 where token=`$tkn`";
+                    if(mysqli_query($conn, $query)) {
+                        $data = [
+                            "message" => "User Verified"
+                        ];
+                        $this->response($this->json($data), 200);
+                    } else {
+                        $data = [
+                            "message" => "Verification Failed"
+                        ];
+                        $this->response($this->json($data), 409);
+                    }
+                }
+            }
+        }
+
 
         /*
             Application API end
@@ -128,7 +153,7 @@
             if((int)method_exists($this,$func) > 0)
                 $this->$func();
             else {
-                $message = array("status" => "Not Found", "msg" => "The method you are requesting is not found :(");
+                $message = array("status" => "Not Found", "msg" => "The method you are requesting is not found :    ");
                 $message = $this->json($message);
                 $this->response($message,404);   // If the method not exist with in this class, response would be "Page not found".
             }
@@ -149,7 +174,7 @@
 
         }
 
-        private function verify(){
+        private function verify_(){
             $user = $this->_request['user'];
             $password =  $this->_request['pass'];
 

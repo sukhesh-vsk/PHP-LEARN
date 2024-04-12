@@ -99,19 +99,23 @@ class SignUp
             $config
         );
 
-        $htmlContent = file_get_contents(__DIR__ . "/../templates/verify.html");
+        $htmlContent = file_get_contents(__DIR__ . "/../templates/template.html");
+        $htmlContent = preg_replace("{{{token}}}", $this->token, $htmlContent);
+        $htmlContent = preg_replace("{{{usermail}}}", $this->email, $htmlContent);
+        $htmlContent = preg_replace("{{{username}}}", $this->username, $htmlContent);
 
         // \Brevo\Client\Model\SendSmtpEmail | Values to send a transactional email
         $sendSmtpEmail = new \Brevo\Client\Model\SendSmtpEmail([
             'subject' => 'Test Email',
-            'sender' => ['name' => 'Batman', 'email' => 'noreply@saakletu.com'],
-            'replyTo' => ['name' => 'Batman', 'email' => 'noreply@saakletu.com'],
+            'sender' => ['name' => 'ClassPro','email' => 'noreply@saakletu.com'],
+            'replyTo' => ['name' => 'Admin', 'email' => 'sukhesh.vsk2005@gmail.com'],
             'to' => [['name' => $this->username, 'email' => $this->email]],
             'htmlContent' => $htmlContent,
         ]);
 
         try {
             $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
+            return true;
         } catch (Exception $e) {
             echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
         }
