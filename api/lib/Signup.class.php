@@ -30,13 +30,15 @@ class SignUp
         $this->email = $email;
         $this->token = $this->genToken();
 
-        if ($this->sendVerifyEmail()) {
+
+        if($this->sendVerifyEmail()) {
             $query = "INSERT INTO `apis`.`auth` (username, password, email, active, token)  values('$this->username', '$this->password', '$this->email', 0, '$this->token')";
         } else {
             throw new Exception("Unable to complete verification..");
         }
 
         if (!mysqli_query($this->db, $query)) {
+
             throw new Exception("Unable to Signup..");
         }
     }
@@ -84,6 +86,7 @@ class SignUp
      *  (currently for testing purpose this returns false always, 
      *    so that the user is not created in the database.)
      */
+
     public function sendVerifyEmail()
     {
         $config_json = file_get_contents(__DIR__ . "/../../../env.json");
@@ -122,7 +125,6 @@ class SignUp
         return false;
     }
 
-
     /*
      *  getInsertID() -> user id (int) 
      * 
@@ -134,4 +136,5 @@ class SignUp
     {
         return mysqli_insert_id($this->db);
     }
+
 }
