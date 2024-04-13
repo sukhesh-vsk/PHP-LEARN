@@ -72,15 +72,18 @@
         }
 
         public function verify() {
-            if($_SERVER['REQUEST_METHOD'] == "POST" && isset($this->_request['tkn'])) {
+            if($_SERVER['REQUEST_METHOD'] == "GET" && isset($this->_request['tkn'])) {
                 $conn = Database::getConnection();
                 $tkn = $this->_request['tkn'];
 
-                $sql = "SELECT * FROM auth WHERE token=`$tkn`";
+                $sql = "SELECT * FROM auth WHERE token='$tkn'";
                 $result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-
+                
+                // print_r($this->_request);
+                
                 if($result) {
-                    $query = "UPDATE auth set active=1 where token=`$tkn`";
+                    $query = "UPDATE auth set active=1 where token='$tkn'";
+                
                     if(mysqli_query($conn, $query)) {
                         $data = [
                             "message" => "User Verified"
@@ -92,6 +95,11 @@
                         ];
                         $this->response($this->json($data), 409);
                     }
+                } else {
+                    $data = [
+                        "message" => "Invalid Token"
+                    ];
+                    $this->response($this->json($data), 403);
                 }
             }
         }
