@@ -30,7 +30,6 @@ class SignUp
         $this->email = $email;
         $this->token = $this->genToken();
 
-
         $query = "INSERT INTO `apis`.`auth` (username, password, email, active, token)  values('$this->username', '$this->password', '$this->email', 0, '$this->token')";
 
         if (!mysqli_query($this->db, $query)) {

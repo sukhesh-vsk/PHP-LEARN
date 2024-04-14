@@ -91,37 +91,32 @@ require_once("lib/Signup.class.php");
     public function verify() {
         if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($this->_request['tkn'])) {
             $conn = Database::getConnection();
-            $tkn = $this->_request['tkn'];
+            $tkn = mysqli_real_escape_string($this->db,$this->_request['tkn']);
 
-            $stmt = $conn->prepare("SELECT * FROM auth WHERE token=?");
-            $stmt->bind_param("s", $tkn);
-            $stmt->execute();
-            $result = $stmt->get_result()->fetch_assoc();
+            $sql = mysqli_query($conn, "SELECT * FROM `auth` WHERE `token` = '$tkn'");
             
-            if (!$result) {
+            if (mysqli_num_rows($sql) != 1) {
                 $data = [
-                    "message" => "Invalid Token"
+                    "error" => "Authentication Failed",
+                    "message" => "Auth token not found !!"
                 ];
                 $this->response($this->json($data), 403);
-                
-                return;
             }
 
-            $stmt = $conn->prepare("UPDATE auth set active=1 where token=?");
-            $stmt->bind_param("s", $tkn);
-            $stmt->execute();
+            $query = mysqli_query($conn, "UPDATE `auth` set `active`=1 where `token` = '$tkn'");
 
-            if($stmt->affected_rows <= 0) {
+            if(mysqli_affected_rows($conn) == 0) {
                 $data = [
-                    "message" => "Verification Failed"
+                    "error" => "Authentication Failed",
+                    "message" => "User is already verified !!"
                 ];
+
                 $this->response($this->json($data), 409);
-                
-                return;
             }
 
             $data = [
-                "message" => "User Verified"
+                "status" => "Success",
+                "message" => "User Verified succesfully !!"
             ];
             $this->response($this->json($data), 200);
         }
@@ -227,7 +222,7 @@ require_once("lib/Signup.class.php");
         }
     }
 
-    private function test() {
+    private function test() { 
         $data = $this->json(getallheaders());
         $this->response($data, 200);
     }
@@ -236,8 +231,8 @@ require_once("lib/Signup.class.php");
     /*************API SPACE END*********************/
 
     /*
-            Encode array into JSON
-        */
+        Encode array into JSON
+    */
     private function json($data) {
         if (is_array($data)) {
             return json_encode($data, JSON_PRETTY_PRINT);
