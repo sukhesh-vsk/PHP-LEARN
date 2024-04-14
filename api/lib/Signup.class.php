@@ -1,7 +1,7 @@
 <?php
 
 require_once('Database.class.php');
-require_once(__DIR__ . '/../vendor/autoload.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/api/vendor/autoload.php');
 
 class SignUp
 {
@@ -31,15 +31,16 @@ class SignUp
         $this->token = $this->genToken();
 
 
-        if($this->sendVerifyEmail()) {
-            $query = "INSERT INTO `apis`.`auth` (username, password, email, active, token)  values('$this->username', '$this->password', '$this->email', 0, '$this->token')";
-        } else {
-            throw new Exception("Unable to complete verification..");
-        }
+        $query = "INSERT INTO `apis`.`auth` (username, password, email, active, token)  values('$this->username', '$this->password', '$this->email', 0, '$this->token')";
 
         if (!mysqli_query($this->db, $query)) {
-
             throw new Exception("Unable to Signup..");
+        } else {
+            if ($this->sendVerifyEmail()) {
+                return true;
+            } else {
+                throw new Exception("Unable to send verification email..");
+            }
         }
     }
 
@@ -89,7 +90,7 @@ class SignUp
 
     public function sendVerifyEmail()
     {
-        $config_json = file_get_contents(__DIR__ . "/../../../env.json");
+        $config_json = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/../env.json");
         $env = json_decode($config_json, true);
 
         // Configure API key authorization: api-key
@@ -102,7 +103,7 @@ class SignUp
             $config
         );
 
-        $htmlContent = file_get_contents(__DIR__ . "/../templates/template.html");
+        $htmlContent = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/api/templates/template.html");
         $htmlContent = preg_replace("{{{token}}}", $this->token, $htmlContent);
         $htmlContent = preg_replace("{{{usermail}}}", $this->email, $htmlContent);
         $htmlContent = preg_replace("{{{username}}}", $this->username, $htmlContent);

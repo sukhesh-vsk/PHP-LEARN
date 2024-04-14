@@ -17,25 +17,25 @@ require_once("lib/Signup.class.php");
     }
 
     /*
-            Application API start
-        */
+        Application API start
+    */
 
     /*
-         *  Signup api  
-         *  default url : https://localhost/api/signup
-         * 
-         *  POST request parameters:
-         *  @username, @password, @email
-         * 
-         *  If all parameters were set :
-         *     => Creates instance for Signup class. On Successful insert returns successful response.
-         *     => Incase of MySql error. Returns response with error message.
-         * 
-         *  Else :
-         *     => Returns response for Bad Request.
-         */
-        public function signup() {
-            if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($this->_request['username']) && isset($this->_request['password']) && isset($this->_request['email'])) {
+     *   Signup api  
+     *   default url : http://localhost/api/signup
+     * 
+     *   POST request parameters:
+     *   @username, @password, @email
+     * 
+     *   If all parameters were set :
+     *      => Creates instance for Signup class. On Successful insert returns successful response.
+     *      => Incase of MySql error. Returns response with error message.
+     * 
+     *   Else :
+     *      => Returns response for Bad Request.
+     */
+    public function signup() {
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($this->_request['username']) && isset($this->_request['password']) && isset($this->_request['email'])) {
 
             try {
                 $s = new Signup($this->_request['username'], $this->_request['password'], $this->_request['email']);
@@ -47,7 +47,7 @@ require_once("lib/Signup.class.php");
                 $data = $this->json($data);
 
                 $this->response($data, 201);
-                } catch(Exception $e) {
+            } catch(Exception $e) {
                 $data = [
                     "error" => "Signup Failed",
                     "message" => $e->getMessage()
@@ -57,11 +57,9 @@ require_once("lib/Signup.class.php");
                     $this->json($data),
                     409
                 );
-
             }
 
         } else {
-
             $data = [
                 "message" => "Bad Request"
             ];
@@ -71,8 +69,26 @@ require_once("lib/Signup.class.php");
         }
     }
 
-    public function verify()
-    {
+    /*
+     *   Token Verify API
+     *   default url : http://locahost/api/verify?tkn={token}
+     *   
+     *   @No Parameters
+     *   
+     *   Validates Email verification token.
+     *   
+     *   Creates DB connection. 
+     *   Checks for token if present in DB.
+     *       If token is valid:
+     *            => Then updates the active status to 1.
+     *       Else:
+     *            => Throws 403 Forbidden response.
+     *       
+     *       If user is verified already. Then 409 Conflict response.
+     *   
+     *       On Successful verification, 200 OK response.
+     */
+    public function verify() {
         if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($this->_request['tkn'])) {
             $conn = Database::getConnection();
             $tkn = $this->_request['tkn'];
@@ -113,14 +129,13 @@ require_once("lib/Signup.class.php");
 
 
     /*
-            Application API end
-        */
+        Application API end
+    */
 
     // Generating hash and verifying -- testing 
 
-    // This will cause error, as for duplicate entry. Comment out insert query in Signup class.
-    public function gen_hash()
-    {
+    // For Testing, This will cause error, as for duplicate entry. So Comment out insert query in Signup class.
+    public function gen_hash() {
         if (isset($this->_request['pass'])) {
             $user = new SignUp("", "admin", "");
             $usr_p = $user->hashPassword();
@@ -138,14 +153,8 @@ require_once("lib/Signup.class.php");
         }
     }
 
-    public function verifyDB()
-    {
-        echo "hello";
-    }
-
-    // experimenting password hash -- testing api
-    public function test_hash()
-    {
+    // Experimenting password hash -- testing api
+    public function test_hash() {
         if (isset($this->_request['pass'])) {
             $salt = "hello";
             $pwd_u = "password";
@@ -162,10 +171,10 @@ require_once("lib/Signup.class.php");
 
 
     /*
-         * Public method for access api.
-         * This method dynmically call the method based on the query string
-         *
-         */
+     * Public method for access api.
+     * This method dynmically call the method based on the query string
+     *
+     */
     public function processApi()
     {
         $func = strtolower(trim(str_replace("/", "", $_REQUEST['rquest'])));
@@ -180,8 +189,7 @@ require_once("lib/Signup.class.php");
 
     /*************API SPACE START*******************/
 
-    private function about()
-    {
+    private function about() {
 
         if ($this->get_request_method() != "POST") {
             $error = array('status' => 'WRONG_CALL', "msg" => "The type of call cannot be accepted by our servers.");
@@ -193,8 +201,7 @@ require_once("lib/Signup.class.php");
         $this->response($data, 200);
     }
 
-    private function verify_()
-    {
+    private function verify_() {
         $user = $this->_request['user'];
         $password =  $this->_request['pass'];
 
@@ -220,8 +227,7 @@ require_once("lib/Signup.class.php");
         }
     }
 
-    private function test()
-    {
+    private function test() {
         $data = $this->json(getallheaders());
         $this->response($data, 200);
     }
@@ -232,8 +238,7 @@ require_once("lib/Signup.class.php");
     /*
             Encode array into JSON
         */
-    private function json($data)
-    {
+    private function json($data) {
         if (is_array($data)) {
             return json_encode($data, JSON_PRETTY_PRINT);
         } else {
