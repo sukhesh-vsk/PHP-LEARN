@@ -1,4 +1,5 @@
 <?php
+
     class REST {
 
         public $_allow = array();
