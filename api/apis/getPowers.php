@@ -1,11 +1,12 @@
  <?php
 
-class SuperHero {
-    private $power = "Fight against villans";
+${basename(__FILE__, '.php')} 
+    = function(){
+        $frnd = "JD";
+        $power = $frnd . " Fight against villans";
+        return $power;
+    };
 
-    public function getPowers() {
-        return $this->power;
-    }
-}
-
-$user = "batman";
+$newfunc = function() {
+    return "New Funtion";
+};

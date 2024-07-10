@@ -26,15 +26,27 @@ class MagicMethods {
             return;
         } 
 
-        $methods = scandir(__DIR__ . '/api/apis');
+        $dir = __DIR__ . '/api/apis/';
+        $methods = scandir($dir);
 
         foreach($methods as $m) {
             if($m == '.' || $m == '..') {
                 continue;
             } 
+            
             $basem = basename($m, '.php');
-            require_once(__DIR__ . '/api/apis/' . $m);
-            echo $user; 
+            if($basem == $method) {
+                include $dir . $m;
+                $func = Closure::bind(${$basem}, $this, get_class());
+                echo "Closure :" . "\n";
+                var_dump($func);
+                if(is_callable($func)) {
+                    return call_user_func_array($func, $args);
+                } else {
+                    return "NO Method Found";
+                }
+                // echo ${$basem}();
+            }
             
         }
     }
@@ -43,9 +55,9 @@ class MagicMethods {
 $obj = new MagicMethods();
 $obj->getName();
 $obj->getFrndName();
-$obj->helloGuys();
-$hero = new SuperHero();
-echo $hero->getPowers();
+echo $obj->getPowers();
+
+
 
 ?>
 </pre>
